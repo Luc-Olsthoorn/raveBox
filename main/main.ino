@@ -1,22 +1,23 @@
 #include <Adafruit_NeoPixel.h>
-#include <Servo.h>
+#include <PWMServo.h>
 #ifdef __AVR__
   #include <avr/power.h>
 #endif
 //PIN DEFINITIONS
 
 
-#define  KEYB      11
-#define  KEYR      12
-#define  SERVO     16
-#define  STRANDPIN 17 
+#define  KEYB      1
+#define  KEYR      0
+#define  SERVO     22
+#define  STRANDPIN 23 
+const int POTPIN1 = A0;
 bool on;
 int val;
 bool down;
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(60, STRANDPIN, NEO_GRB + NEO_KHZ800);
 
-Servo myServo;
+PWMServo myServo;
 void setup() {
   val=0;
   on=false;
@@ -28,6 +29,7 @@ void setup() {
   myServo.attach(SERVO);
   attachInterrupt(digitalPinToInterrupt(KEYR), turnOff, RISING);
   attachInterrupt(digitalPinToInterrupt(KEYB), turnOn, RISING);
+  
 }
 void turnOff(){
   on=false;
@@ -40,28 +42,14 @@ void turnOn(){
 }
 
 void loop() {
-  if(down){
-    val--;
-  }else{
-    val++;
-  }
-  if(val == 180)
-  {
-    down = true;
-  }else if (val == 0){
-    down = false;
-  }
-
-  if(on){
-     for (int pos = 0; pos <= val; pos += 1) { // goes from 0 degrees to 180 degrees
-        // in steps of 1 degree
-        myServo.write(pos);              // tell servo to go to position in variable 'pos'
-        delay(15);                       // waits 15ms for the servo to reach the position
-      }
+    val = analogRead(POTPIN1);
+    val = map(val, 0, 1023, 0, 179); 
     myServo.write(val); 
-    colorWipe(strip.Color(255, 0, 0), 50); // Red
-    colorWipe(strip.Color(0, 255, 0), 50); // Green
-  }
+    delay(15);
+     // Red
+     colorWipe(strip.Color(255, 0, 0), 50);
+     colorWipe(strip.Color(0, 255, 0), 50); // Green
+  //}
   // Some example procedures showing how to display to the pixels:
 
   //colorWipe(strip.Color(0, 0, 255), 50); // Blue
