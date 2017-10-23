@@ -1,5 +1,6 @@
 #include <Adafruit_NeoPixel.h>
 #include "strands.h"
+#include <math.h>
 #include <PWMServo.h>
 #ifdef __AVR__
   #include <avr/power.h>
@@ -13,6 +14,7 @@
 #define  STRANDPIN 23 
 const int POTPIN1 = A0;
 const int POTPIN2 = A1;
+const int POTPIN3 = A2;
 
 int val;
 LEDStrand *strandy = new LEDStrand(STRANDPIN, 30); 
@@ -24,7 +26,7 @@ void setup() {
   myServo.attach(SERVO);
   attachInterrupt(digitalPinToInterrupt(KEYR), turnOff, RISING);
   attachInterrupt(digitalPinToInterrupt(KEYB), turnOn, RISING);
-  
+  strandy->color();
 }
 void turnOff(){
 }
@@ -32,26 +34,26 @@ void turnOn(){
 }
 
 void loop() {
+
     val = analogRead(POTPIN1);
-    int ServoVal = map(val, 10, 1023, 0, 179); 
-    int strandVal = map(val, 0, 1023, 0, 30); 
+    int ServoVal = map(val, 0, 1023, 0, 179); 
+    int strandVal = map(val, 0, 1023, 0, 30);
     myServo.write(ServoVal); 
     strandy->fillFromLeft(strandVal);
-    Serial.write(45);
+
+    val = analogRead(POTPIN2);
+    int brightnessVal = map(val, 0, 1023, 0, 255);
+    strandy->setBrightness(brightnessVal);
+
+    val = analogRead(POTPIN3);
+    int color = map(val, 0, 1023, 0, 20);
+    strandy->rainbowAll(color);
+
+    strandy->updateLEDS();
     delay(5);
      
-  // Some example procedures showing how to display to the pixels:
-
-  //colorWipe(strip.Color(0, 0, 255), 50); // Blue
-  // Send a theater pixel chase in...
-  //theaterChase(strip.Color(127, 127, 127), 50); // White
-  //theaterChase(strip.Color(127, 0, 0), 50); // Red
-  //theaterChase(strip.Color(0, 0, 127), 50); // Blue
-
-  //rainbow(20);
-  //rainbowCycle(20);
-  //theaterChaseRainbow(50);
+  
 }
 
-// Fill the dots one after the other with a color
+
 

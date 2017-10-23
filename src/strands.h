@@ -1,26 +1,81 @@
+class RGBLED {
+	private:
+		int red;
+		int green;
+		int blue;
+		int brightness;
+		bool on;
+
+	public:
+		RGBLED(){
+			red=0;
+			green=0;
+			blue=0;
+			brightness=0;
+			bool on = false;
+		}
+		void turnOn(){
+			on = true;
+		}	
+		void turnOff(){
+			on = false;
+		}
+		void setBrightness(int amount){
+			brightness = amount;
+		}
+
+		int getRed(){
+			if(on)
+				return red * brightness/255;
+			else
+				return 0;
+		}
+		void setRed(int amount){
+			red = amount;
+		}
+		int getGreen(){
+			if(on)
+				return green * brightness/255;
+			else
+				return 0;
+		}
+		void setGreen(int amount){
+			green = amount;
+		}
+		int getBlue(){
+			if(on)
+				return blue * brightness/255;
+			else
+				return 0;
+		}
+		void setBlue(int amount){
+			blue = amount;
+		}
+};
 class LEDStrand {
 	private: 
 		int PIN;
 		int numOfPixels;
 		int mode;
-		int currPixel;
-		Adafruit_NeoPixel strip;  
+		Adafruit_NeoPixel strip; //Actually controls the lights
+		RGBLED **ledArray; 
+
 	public:
 		LEDStrand(int inPIN, int inNumOfPixels){
-			
 			PIN = inPIN;
 			numOfPixels = inNumOfPixels;
-			currPixel=0;
+
 			mode=0;
+			ledArray =  new RGBLED*[numOfPixels];
+			for(int i=0; i<inNumOfPixels; i++){
+				ledArray[i] = new RGBLED();
+			}
 			strip = Adafruit_NeoPixel(numOfPixels, inPIN, NEO_GRB + NEO_KHZ800);
 			strip.begin();
   			strip.show();
-			Serial.write("yeet");
 		}
-		void update(){
+		void updateMode(){
 			switch(mode){
-				case 0:
-					colorWipe();
 				default: 
 					break;
 			}
@@ -28,26 +83,54 @@ class LEDStrand {
 		void setMode(int inMode){
 			mode = inMode;
 		}
-		void colorWipe() {
-		  	if(currPixel == numOfPixels){
-		  		currPixel =0;
-		  	}
-		  	
-		    strip.setPixelColor(currPixel, strip.Color(0, 0, 255));
-		    strip.show();
-		    currPixel++;
+		void updateLEDS(){
+			for(int i=0; i<numOfPixels; i++){
+				strip.setPixelColor(i, strip.Color(ledArray[i]->getRed(), ledArray[i]->getGreen() , ledArray[i]->getBlue()));
+			}
+			strip.show();
+		}
+		void setBrightness(int val){
+			for(int i =0; i < numOfPixels; i++){
+				ledArray[i]->setBrightness(val);
+			}
 		}
 		void fillFromLeft(int val){
 			if(val>numOfPixels){
 				val = numOfPixels;
 			}
 			for(int i =0; i < val; i++){
-				strip.setPixelColor(i, strip.Color(0, 0, 255));
+				ledArray[i]->turnOn();
 			}
 			for(int i=val; i<numOfPixels; i++){
-				strip.setPixelColor(i, strip.Color(0, 0, 0));
+				ledArray[i]->turnOff();
 			}
 			strip.show();
+		}
+		void color(){
+			for(int i =0; i < numOfPixels; i++){
+				ledArray[i]->setBlue(255);
+			}
+		}
+		void rainbow(int val, int i)
+		{
+			int frequency1 = .3;
+			int frequency2 = .3;
+			int frequency3 = .3;
+			int center = 128;
+			int width = 127;
+			int phase1=0;
+			int phase2=2;
+			int phase3=4;
+			ledArray[i]->setRed((int)(sin(frequency1*val + phase1) * width + center));
+			ledArray[i]->setGreen((int)(sin(frequency2*val + phase2) * width + center));
+			ledArray[i]->setBlue((int)(sin(frequency3*val + phase3) * width + center));
+			
+		}
+		void rainbowAll(int val){
+			int value =val;
+			for(int i =0; i < numOfPixels; i++){
+				rainbow(value, i);
+			}
 		}
 		/*
 		void rainbow(uint8_t wait) {
@@ -113,18 +196,8 @@ class LEDStrand {
 
 		// Input a value 0 to 255 to get a color value.
 		// The colours are a transition r - g - b - back to r.
-		uint32_t Wheel(byte WheelPos) {
-		  WheelPos = 255 - WheelPos;
-		  if(WheelPos < 85) {
-		    return strip.Color(255 - WheelPos * 3, 0, WheelPos * 3);
-		  }
-		  if(WheelPos < 170) {
-		    WheelPos -= 85;
-		    return strip.Color(0, WheelPos * 3, 255 - WheelPos * 3);
-		  }
-		  WheelPos -= 170;
-		  return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
-		}
+		
 		*/
 };
+
 
