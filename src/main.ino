@@ -1,4 +1,5 @@
 #include <Adafruit_NeoPixel.h>
+#include "rgbhsv.h"
 #include "strands.h"
 #include <math.h>
 #include <PWMServo.h>
@@ -24,35 +25,34 @@ void setup() {
   pinMode(KEYR, INPUT); 
   pinMode(KEYB, INPUT); 
   myServo.attach(SERVO);
-  attachInterrupt(digitalPinToInterrupt(KEYR), turnOff, RISING);
-  attachInterrupt(digitalPinToInterrupt(KEYB), turnOn, RISING);
-  strandy->color();
 }
-void turnOff(){
-}
-void turnOn(){
-}
+
 
 void loop() {
+    if(digitalRead(KEYB)==HIGH){
+      Serial.write("ON");
+      val = analogRead(POTPIN1);
+      int ServoVal = map(val, 0, 1023, 0, 179); 
+      int strandVal = map(val, 0, 1023, 0, 30);
+      myServo.write(ServoVal); 
+      strandy->fillFromLeft(strandVal);
 
-    val = analogRead(POTPIN1);
-    int ServoVal = map(val, 0, 1023, 0, 179); 
-    int strandVal = map(val, 0, 1023, 0, 30);
-    myServo.write(ServoVal); 
-    strandy->fillFromLeft(strandVal);
+      val = analogRead(POTPIN2);
+      int brightnessVal = map(val, 0, 1023, 0, 255);
+      strandy->setBrightness(brightnessVal);
 
-    val = analogRead(POTPIN2);
-    int brightnessVal = map(val, 0, 1023, 0, 255);
-    strandy->setBrightness(brightnessVal);
+      int val = analogRead(POTPIN3);
+      int color = map(val, 0, 1023, 0, 360);
+      strandy->color(color);
 
-    val = analogRead(POTPIN3);
-    int color = map(val, 0, 1023, 0, 20);
-    strandy->rainbowAll(color);
-
-    strandy->updateLEDS();
-    delay(5);
-     
-  
+      strandy->updateLEDS();
+      delay(5);    
+    }else{
+      Serial.write("OFF");
+      strandy->setBrightness(0);
+      strandy->updateLEDS();
+      delay(100);  
+    }
 }
 
 
