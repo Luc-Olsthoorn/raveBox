@@ -107,7 +107,7 @@ class LEDStrand {
 			strip.show();
 		}
 		void color(int val){
-			Serial.println(val);
+	
 			
 			hsv d = {};
 				d.h=val;

@@ -30,13 +30,12 @@ void setup() {
 
 void loop() {
     if(digitalRead(KEYB)==HIGH){
-      Serial.write("ON");
       val = analogRead(POTPIN1);
       int ServoVal = map(val, 0, 1023, 0, 179); 
       int strandVal = map(val, 0, 1023, 0, 30);
-      myServo.write(ServoVal); 
+      //myServo.write(ServoVal); 
       strandy->fillFromLeft(strandVal);
-
+      Serial.println(myServo.read());
       val = analogRead(POTPIN2);
       int brightnessVal = map(val, 0, 1023, 0, 255);
       strandy->setBrightness(brightnessVal);
@@ -48,7 +47,7 @@ void loop() {
       strandy->updateLEDS();
       delay(5);    
     }else{
-      Serial.write("OFF");
+
       strandy->setBrightness(0);
       strandy->updateLEDS();
       delay(100);  

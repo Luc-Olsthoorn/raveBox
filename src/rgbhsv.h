@@ -63,7 +63,7 @@ rgb hsv2rgb(hsv in)
     double      hh, p, q, t, ff;
     long        i;
     rgb         out;
-    Serial.println(in.h);
+
     if(in.s <= 0.0) {       // < is bogus, just shuts up warnings
         out.r = in.v;
         out.g = in.v;
@@ -74,7 +74,6 @@ rgb hsv2rgb(hsv in)
     if(hh >= 360.0) hh = 0.0;
     hh /= 60.0;
     i = (long)hh;
-    Serial.println(i);
     ff = hh - i;
     p = in.v * (1.0 - in.s);
     q = in.v * (1.0 - (in.s * ff));
