@@ -3,6 +3,7 @@ class RGBLED {
 		int red;
 		int green;
 		int blue;
+		int hue;
 		int brightness;
 		bool on;
 
@@ -12,6 +13,7 @@ class RGBLED {
 			green=0;
 			blue=0;
 			brightness=0;
+			hue=0;
 			bool on = false;
 		}
 		void turnOn(){
@@ -50,6 +52,24 @@ class RGBLED {
 		}
 		void setBlue(int amount){
 			blue = amount;
+		}
+		void setHue(int inHue){
+			Serial.println(inHue);
+			if(inHue == 360){
+				inHue = 0;
+			}
+			hue = inHue;
+			hsv theHSV = {};
+			theHSV.h=inHue;
+			theHSV.s=1; 
+			theHSV.v=1;
+			rgb a = hsv2rgb(theHSV);
+			red = a.r*255;
+			green = a.g*255;
+			blue = a.b*255;
+		}
+		int getHue(){
+			return hue;
 		}
 };
 class LEDStrand {
@@ -106,30 +126,15 @@ class LEDStrand {
 			}
 			strip.show();
 		}
-		void color(int val){
-	
-			
-			hsv d = {};
-				d.h=val;
-				d.s=1; 
-				d.v=1;
-			rgb a = hsv2rgb(d);
+		void color(int val){	
 			for(int i =0; i < numOfPixels; i++){
-				ledArray[i]->setBlue(a.b*255);
-				ledArray[i]->setRed(a.r*255);
-				ledArray[i]->setGreen(a.g*255);
+				ledArray[i]->setHue(val);
 			}
 		}
-		void rainbow(int val, int i)
+		void rainbow()
 		{
-			ledArray[i]->setRed(12);
-			ledArray[i]->setGreen(3);
-			ledArray[i]->setBlue(4);
-		}
-		void rainbowAll(int val){
-			int value =val;
 			for(int i =0; i < numOfPixels; i++){
-				rainbow(value, i);
+				ledArray[i]->setHue(ledArray[i]->getHue()+1);
 			}
 		}
 };
