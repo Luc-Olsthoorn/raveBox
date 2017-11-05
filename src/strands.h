@@ -75,8 +75,8 @@ class RGBLED {
 class LEDStrand {
 	private: 
 		int PIN;
+		int state;
 		int numOfPixels;
-		int mode;
 		Adafruit_NeoPixel strip; //Actually controls the lights
 		RGBLED **ledArray; 
 
@@ -85,7 +85,7 @@ class LEDStrand {
 			PIN = inPIN;
 			numOfPixels = inNumOfPixels;
 
-			mode=0;
+			
 			ledArray =  new RGBLED*[numOfPixels];
 			for(int i=0; i<inNumOfPixels; i++){
 				ledArray[i] = new RGBLED();
@@ -94,15 +94,7 @@ class LEDStrand {
 			strip.begin();
   			strip.show();
 		}
-		void updateMode(){
-			switch(mode){
-				default: 
-					break;
-			}
-		}
-		void setMode(int inMode){
-			mode = inMode;
-		}
+
 		void updateLEDS(){
 			for(int i=0; i<numOfPixels; i++){
 				strip.setPixelColor(i, strip.Color(ledArray[i]->getRed(), ledArray[i]->getGreen() , ledArray[i]->getBlue()));
@@ -112,6 +104,21 @@ class LEDStrand {
 		void setBrightness(int val){
 			for(int i =0; i < numOfPixels; i++){
 				ledArray[i]->setBrightness(val);
+			}
+		}
+		void flash(){
+			if(state==1){
+				state=0; 
+				for(int i=0; i<numOfPixels; i++)
+				{
+					ledArray[i]->turnOff();
+				}
+			}else{
+				for(int i=0; i<numOfPixels; i++)
+				{
+					ledArray[i]->turnOn();
+				}
+				state=1;
 			}
 		}
 		void fillFromLeft(int val){
