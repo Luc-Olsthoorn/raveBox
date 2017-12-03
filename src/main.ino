@@ -12,6 +12,7 @@
 
 #define  KEYB      1
 #define  KEYR      0
+#define  SERVOCONTROLPIN 	21
 #define  SERVO     22
 #define  STRANDPIN 23 
 //5-12 reserved for segment
@@ -34,7 +35,7 @@ LEDStrand *strandy = new LEDStrand(STRANDPIN, 30);
 LEDSegment *segmenty = new LEDSegment(segmentArr);
 PWMServo myServo;
 void setup() {
-
+	pinMode(SERVOCONTROLPIN, OUTPUT);
 	Serial.begin(9600);    
 	pinMode(KEYR, INPUT); 
 	pinMode(KEYB, INPUT); 
@@ -58,8 +59,11 @@ void loop() {
     		strandy->setBrightness(0);
     		segmenty->turnOff();
    			strandy->updateLEDS();
+   			digitalWrite(SERVO, LOW);
+   			digitalWrite(SERVOCONTROLPIN, LOW);
 		}
 		else{
+			digitalWrite(SERVOCONTROLPIN, HIGH);
     		on=true;
     	}
     }
@@ -117,7 +121,9 @@ void loop() {
 		    
 		    //Servo
 		    if(counter%1==0 && on){
+		
 		    	myServo.write(map(potPin5Val, 0, 1023, 0, 179)); 
+		    	
 		    }
 		 } break;
 		 case 3:{
