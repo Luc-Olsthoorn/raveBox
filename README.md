@@ -1,24 +1,9 @@
-# TeensyBlinds
+# RaveBox
 
 ## About
 
-This is a repository for the idea of automatic blind opening, and for a back lit Led all smashed into one. This is currently very broad repo, but might split into more specific once complete functionality will be complete.
+Version 0.0.0
+ 
+This takes in an audio signal and makes lights move to the music
 
-### Tree
 
-```
-├── README.md
-├── autocad
-│   ├── NotPot.bak
-│   ├── NotPot.dwg
-│   ├── NotPotTogether.bak
-│   ├── NotPotTogether.dwg
-│   └── NotPotTogether.stl
-├── lib
-│   └── readme.txt
-├── platformio.ini
-└── src
-    ├── main.ino
-    ├── rgbhsv.h
-    └── strands.h
-```
