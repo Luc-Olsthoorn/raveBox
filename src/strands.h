@@ -106,6 +106,17 @@ class LEDStrand {
 				ledArray[i]->setBrightness(val);
 			}
 		}
+		void danceLights (bool *boolBoxArr){
+			//right now assumes boolbox array is the size of LED strand. This can be changed easily with mapping
+			for(int i =0; numOfPixels;i++){
+				if(boolBoxArr[i]){
+					ledArray[i]->turnOn();
+				}else{
+					ledArray[i]->turnOff();
+				}
+				
+			}
+		}
 		void flash(){
 			if(state==1){
 				state=0; 
