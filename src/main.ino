@@ -23,6 +23,7 @@ audioSampler *sampler;
 void setup() {
 	strandy = new LEDStrand(STRANDPIN, 240); 
 	sampler = new audioSampler(240); 
+	sampler->startSampleing();
 	strandy->color(32);
 }
 void loop() {
@@ -41,8 +42,6 @@ void loop() {
 		  	//------------------- 
     		//LED Strand Portion
 		  	if(counter%1==0 && on){	
-		  		sampler->sample();
-		  		sampler->runFFT();
 
 		  		strandy->danceLights(sampler->getBoolBox());
 				strandy->updateLEDS();
