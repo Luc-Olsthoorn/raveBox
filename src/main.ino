@@ -4,7 +4,7 @@
 #include <math.h>
 #include "rgbhsv.h"
 #include "strands.h"
-#include "led7Segment.h"
+#include "fourier.h"
 #include <PWMServo.h>
 #ifdef __AVR__
   #include <avr/power.h>
@@ -15,18 +15,24 @@
 
 #define  STRANDPIN 23 
 #define  AUDIOINPIN 13 
+static const int SAMPLE_RATE_HZ = 9000;  
 int counter =0;
 bool on=true;
-
+IntervalTimer samplingTimer; //must be gloval as per teenseys suggestion
 LEDStrand *strandy;
 audioSampler *sampler;
 void setup() {
 	strandy = new LEDStrand(STRANDPIN, 240); 
-	sampler = new audioSampler(240); 
-	sampler->startSampleing();
+	sampler = new audioSampler(AUDIOINPIN, 240); 
+	samplingTimer.begin(samplingCallback, 1000000/SAMPLE_RATE_HZ);
 	strandy->color(32);
 }
+//Bullshit code you have to write that is limited by teensey not wanting to run too many sampling timers.
+void samplingCallback() {
+  sampler->samplingCallback();
+}
 void loop() {
+    
 	//-------------------
 	//Input Portion
 	//-------------------
