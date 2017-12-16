@@ -25,7 +25,9 @@ class RGBLED {
 		void setBrightness(int amount){
 			brightness = amount;
 		}
-
+		int getBrightness(){
+			return brightness;
+		}
 		int getRed(){
 			if(on)
 				return red * brightness/255;
@@ -77,6 +79,7 @@ class LEDStrand {
 		int PIN;
 		int state;
 		int numOfPixels;
+		float bassLevel =0.0;
 		Adafruit_NeoPixel strip; //Actually controls the lights
 		RGBLED **ledArray; 
 
@@ -96,6 +99,7 @@ class LEDStrand {
 		}
 
 		void updateLEDS(){
+
 			for(int i=0; i<numOfPixels; i++){
 				strip.setPixelColor(i, strip.Color(ledArray[i]->getRed(), ledArray[i]->getGreen() , ledArray[i]->getBlue()));
 			}
@@ -108,15 +112,34 @@ class LEDStrand {
 		}
 		void danceLights (bool *boolBoxArr){
 			//right now assumes boolbox array is the size of LED strand. This can be changed easily with mapping
-			for(int i =0; numOfPixels;i++){
+			int count=0;
+			for(int i =0; i< numOfPixels/10;i++){
+				if(boolBoxArr[i]){
+					count++;
+				}
+			}
+			if (bassLevel < count-15){
+				bassLevel = count;
+			}else{
+
+				bassLevel = bassLevel-2;
+				if(bassLevel<0){
+					bassLevel = 0;
+				}
+			}
+			fillFromSource(floor((bassLevel/10)*numOfPixels));
+			/*
+			for(int i = numOfPixels/5; i< numOfPixels;i++){
 				if(boolBoxArr[i]){
 					ledArray[i]->turnOn();
 				}else{
 					ledArray[i]->turnOff();
 				}
-				
 			}
+			*/
+
 		}
+
 		void flash(){
 			if(state==1){
 				state=0; 
@@ -132,7 +155,7 @@ class LEDStrand {
 				state=1;
 			}
 		}
-		void fillFromLeft(int val){
+		void fillFromSource(int val){
 			if(val>numOfPixels){
 				val = numOfPixels;
 			}
@@ -153,6 +176,16 @@ class LEDStrand {
 		{
 			for(int i =0; i < numOfPixels; i++){
 				ledArray[i]->setHue(ledArray[i]->getHue()+1);
+			}
+		}
+		void staticRainbow(){
+			for(int i =0; i < numOfPixels; i++){
+				ledArray[i]->setHue(i*360/numOfPixels);
+			}
+		}
+		void turnOn(){
+			for(int i =0; i < numOfPixels; i++){
+				ledArray[i]->turnOn();
 			}
 		}
 };
